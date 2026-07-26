@@ -20,7 +20,11 @@ export async function getProducts(): Promise<Product[]> {
     .eq("active", true)
     .order("created_at", { ascending: false });
 
-  if (error) throw error;
+  if (error) {
+    console.error("ERRO getProducts:");
+    console.error(JSON.stringify(error, null, 2));
+    throw error;
+  }
 
   return data as Product[];
 }
@@ -28,28 +32,25 @@ export async function getProducts(): Promise<Product[]> {
 export async function getProductBySlug(
   slug: string
 ): Promise<Product | null> {
+  console.log("================================");
+  console.log("SLUG RECEBIDO:", slug);
+
   const { data, error } = await supabase
     .from("products")
-    .select(`
-      *,
-      categories (
-        id,
-        name
-      ),
-      product_images (
-        id,
-        storage_path,
-        alt_text
-      )
-    `)
+    .select("*")
     .eq("slug", slug)
-    .single();
+    .maybeSingle();
 
-  if (error) return null;
+  console.log("DADOS:", data);
+  console.log("ERRO:", error);
+  console.log("================================");
 
-  return data as Product;
+  if (error) {
+    throw error;
+  }
+
+  return data as Product | null;
 }
-
 export async function createProduct(
   product: Omit<Product, "id" | "created_at" | "updated_at" | "categories" | "product_images">,
   images: File[]

@@ -6,13 +6,15 @@ import { getPublicUrl } from "@/services/storage";
 import AddToCartButton from "@/app/components/AddToCartButton";
 
 type Props = {
-  params: {
+  params: Promise<{
     slug: string;
-  };
+  }>;
 };
 
 export default async function ProductPage({ params }: Props) {
-  const slug = params.slug;
+  const { slug } = await params;
+
+  console.log("SLUG DA PÁGINA:", slug);
 
   const product = await getProductBySlug(slug);
 
