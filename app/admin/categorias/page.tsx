@@ -32,8 +32,13 @@ export default function CategoriasPage() {
     slug: string;
     description: string;
   }) {
-    await createCategory(data);
+    await createCategory({
+      ...data,
+      active: true,
+    });
+
     await loadCategories();
+    setOpenModal(false);
   }
 
   return (
@@ -68,27 +73,16 @@ export default function CategoriasPage() {
           <table className="w-full">
             <thead className="bg-neutral-50">
               <tr>
-                <th className="text-left p-4">
-                  Nome
-                </th>
-
-                <th className="text-left p-4">
-                  Slug
-                </th>
-
-                <th className="text-left p-4">
-                  Status
-                </th>
+                <th className="text-left p-4">Nome</th>
+                <th className="text-left p-4">Slug</th>
+                <th className="text-left p-4">Status</th>
               </tr>
             </thead>
 
             <tbody>
               {loading && (
                 <tr>
-                  <td
-                    colSpan={3}
-                    className="p-6"
-                  >
+                  <td colSpan={3} className="p-6">
                     Carregando...
                   </td>
                 </tr>
@@ -100,16 +94,20 @@ export default function CategoriasPage() {
                     key={category.id}
                     className="border-t"
                   >
-                    <td className="p-4">
-                      {category.name}
-                    </td>
+                    <td className="p-4">{category.name}</td>
+
+                    <td className="p-4">{category.slug}</td>
 
                     <td className="p-4">
-                      {category.slug}
-                    </td>
-
-                    <td className="p-4 text-green-600 font-medium">
-                      Ativa
+                      {category.active ? (
+                        <span className="font-medium text-green-600">
+                          Ativa
+                        </span>
+                      ) : (
+                        <span className="font-medium text-red-600">
+                          Inativa
+                        </span>
+                      )}
                     </td>
                   </tr>
                 ))}

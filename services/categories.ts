@@ -15,11 +15,16 @@ export async function getCategories(): Promise<Category[]> {
 }
 
 export async function createCategory(
-  category: Omit<Category, "id" | "created_at" | "updated_at">
+  category: Partial<Omit<Category, "id" | "created_at" | "updated_at">>
 ) {
   const { error } = await supabase
     .from("categories")
-    .insert(category);
+    .insert([
+      {
+        active: true,
+        ...category,
+      },
+    ]);
 
   if (error) {
     throw error;
