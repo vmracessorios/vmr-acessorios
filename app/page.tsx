@@ -7,6 +7,7 @@ import InstagramSection from "./components/Instagram";
 import Newsletter from "./components/Newsletter";
 import Footer from "./components/Footer";
 import AboutBrand from "./components/AboutBrand";
+import Benefits from "./components/Benefits";
 
 export default function Home() {
   return (
@@ -16,6 +17,8 @@ export default function Home() {
       <div className="pt-24">
         <HeroSlider />
       </div>
+
+      <Benefits />
 
       <Categories />
       <FeaturedProducts />

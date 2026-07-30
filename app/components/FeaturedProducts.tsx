@@ -3,11 +3,14 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Heart, ShoppingBag } from "lucide-react";
+
+import { Heart } from "lucide-react";
 
 import { getProducts } from "@/services/products";
 import { Product } from "@/types/product";
 import { getPublicUrl } from "@/services/storage";
+
+import AddToCartButton from "@/app/components/AddToCartButton";
 
 export default function FeaturedProducts() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -31,7 +34,7 @@ export default function FeaturedProducts() {
   if (loading) {
     return (
       <section className="bg-white py-24">
-        <div className="max-w-7xl mx-auto px-6 text-center">
+        <div className="mx-auto max-w-7xl px-6 text-center">
           Carregando produtos...
         </div>
       </section>
@@ -40,10 +43,11 @@ export default function FeaturedProducts() {
 
   return (
     <section className="bg-white py-24">
-      <div className="max-w-7xl mx-auto px-6">
+      <div className="mx-auto max-w-7xl px-6">
 
-        <div className="text-center mb-16">
-          <span className="uppercase tracking-[5px] text-[#C8A96A] text-sm">
+        <div className="mb-16 text-center">
+
+          <span className="text-sm uppercase tracking-[5px] text-[#C8A96A]">
             MAIS VENDIDOS
           </span>
 
@@ -51,10 +55,11 @@ export default function FeaturedProducts() {
             Escolha seu favorito
           </h2>
 
-          <p className="mt-5 text-neutral-500 max-w-2xl mx-auto leading-7">
+          <p className="mx-auto mt-5 max-w-2xl leading-7 text-neutral-500">
             Cada colar foi escolhido para valorizar sua beleza com elegância,
             sofisticação e exclusividade.
           </p>
+
         </div>
 
         <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
@@ -66,53 +71,106 @@ export default function FeaturedProducts() {
                 ? getPublicUrl(product.product_images[0].storage_path)
                 : "/placeholder.jpg";
 
+            const pixPrice = product.price * 0.95;
+
             return (
+
               <div
                 key={product.id}
-                className="group"
+                className="group overflow-hidden rounded-3xl border border-[#EFE9DF] bg-white shadow-sm transition-all duration-300 hover:-translate-y-2 hover:shadow-xl"
               >
-                <div className="relative overflow-hidden rounded-3xl bg-[#FAF8F5] aspect-[4/5]">
 
-                  <button className="absolute right-5 top-5 z-20 w-11 h-11 rounded-full bg-white shadow-md flex items-center justify-center">
+                <div className="relative aspect-[4/5] overflow-hidden bg-[#FAF8F5]">
+
+                  <button className="absolute right-4 top-4 z-20 flex h-11 w-11 items-center justify-center rounded-full bg-white shadow-md transition hover:scale-110">
+
                     <Heart size={18} />
+
                   </button>
 
-                  <Image
-                    src={image}
-                    alt={product.name}
-                    fill
-                    className="object-cover transition duration-500 group-hover:scale-105"
-                  />
+                  <Link href={`/produtos/${product.slug}`}>
 
-                  <div className="absolute bottom-0 left-0 w-full p-5 translate-y-full group-hover:translate-y-0 transition duration-500">
+                    <Image
+                      src={image}
+                      alt={product.name}
+                      fill
+                      className="object-cover transition duration-700 group-hover:scale-105"
+                    />
 
-                    <Link
-                      href={`/produtos/${product.slug}`}
-                      className="flex items-center justify-center gap-2 rounded-full bg-[#C8A96A] py-3 text-white font-medium"
-                    >
-                      <ShoppingBag size={18} />
-                      Ver Produto
-                    </Link>
+                  </Link>
 
-                  </div>
                 </div>
 
-                <div className="mt-6 text-center">
+                <div className="p-6">
 
-                  <h3 className="text-xl text-[#2F2F2F]">
+                  <h3 className="text-lg font-medium text-[#2F2F2F]">
                     {product.name}
                   </h3>
 
-                  <p className="mt-3 text-2xl font-semibold text-[#C8A96A]">
+                  <div className="mt-2 flex text-yellow-400">
+                    ★★★★★
+                  </div>
+
+                  <p className="mt-4 text-2xl font-semibold text-[#C8A96A]">
+
                     {product.price.toLocaleString("pt-BR", {
                       style: "currency",
                       currency: "BRL",
                     })}
+
                   </p>
+
+                  <p className="mt-1 text-sm font-medium text-green-600">
+
+                    💚 PIX:
+                    {" "}
+
+                    {pixPrice.toLocaleString("pt-BR", {
+                      style: "currency",
+                      currency: "BRL",
+                    })}
+
+                  </p>
+
+                  <div className="mt-3">
+
+                    {product.stock > 0 ? (
+                      <span className="rounded-full bg-green-100 px-3 py-1 text-xs font-medium text-green-700">
+                        Em estoque
+                      </span>
+                    ) : (
+                      <span className="rounded-full bg-red-100 px-3 py-1 text-xs font-medium text-red-700">
+                        Indisponível
+                      </span>
+                    )}
+
+                  </div>
+
+                  <div className="mt-6">
+
+                    <AddToCartButton
+                      product={{
+                        id: product.id,
+                        slug: product.slug,
+                        name: product.name,
+                        price: product.price,
+                        image,
+                      }}
+                    />
+
+                  </div>
+
+                  <Link
+                    href={`/produtos/${product.slug}`}
+                    className="mt-4 block text-center text-sm font-medium text-[#C8A96A] transition hover:underline"
+                  >
+                    Ver detalhes →
+                  </Link>
 
                 </div>
 
               </div>
+
             );
           })}
 

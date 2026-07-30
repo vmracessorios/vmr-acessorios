@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-
 import { Category } from "@/types/category";
+import { Product } from "@/types/product";
 
 type ProductForm = {
   name: string;
@@ -23,6 +23,7 @@ type Props = {
     images: File[]
   ) => Promise<void>;
   categories: Category[];
+  product?: Product | null;
 };
 
 const initialForm: ProductForm = {
@@ -41,8 +42,8 @@ export default function ProductModal({
   onClose,
   onSave,
   categories,
+  product,
 }: Props) {
-
   const [loading, setLoading] = useState(false);
 
   const [images, setImages] = useState<File[]>([]);
@@ -51,14 +52,39 @@ export default function ProductModal({
     useState<ProductForm>(initialForm);
 
   useEffect(() => {
+    if (!product) {
+      setForm(initialForm);
+      setImages([]);
+      return;
+    }
+
+    setForm({
+      name: product.name,
+      slug: product.slug,
+      description: product.description,
+      price: Number(product.price),
+      stock: product.stock,
+      category_id: product.category_id,
+      featured: product.featured,
+      active: product.active,
+    });
+
+    setImages([]);
+  }, [product]);
+    useEffect(() => {
+    if (product) return;
+
     setForm((old) => ({
       ...old,
       slug: old.name
         .toLowerCase()
         .trim()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/[^a-zA-Z0-9 ]/g, "")
         .replace(/\s+/g, "-"),
     }));
-  }, [form.name]);
+  }, [form.name, product]);
 
   function update<K extends keyof ProductForm>(
     key: K,
@@ -71,33 +97,33 @@ export default function ProductModal({
   }
 
   async function handleSave() {
-    setLoading(true);
+    try {
+      setLoading(true);
 
-    await onSave(form, images);
+      await onSave(form, images);
 
-    setLoading(false);
+      setForm(initialForm);
+      setImages([]);
 
-    setImages([]);
-
-    setForm(initialForm);
-
-    onClose();
+      onClose();
+    } finally {
+      setLoading(false);
+    }
   }
 
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-6 overflow-y-auto">
+    <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-black/40 p-6">
 
       <div className="w-full max-w-3xl rounded-2xl bg-white p-8">
 
         <h2 className="mb-8 text-2xl font-semibold">
-          Novo Produto
+          {product ? "Editar Produto" : "Novo Produto"}
         </h2>
 
         <div className="space-y-5">
-
-          <input
+                  <input
             className="h-12 w-full rounded-xl border px-4"
             placeholder="Nome do produto"
             value={form.name}
@@ -107,7 +133,7 @@ export default function ProductModal({
           />
 
           <input
-            className="h-12 w-full rounded-xl border px-4"
+            className="h-12 w-full rounded-xl border bg-neutral-100 px-4"
             placeholder="Slug"
             value={form.slug}
             readOnly
@@ -127,16 +153,13 @@ export default function ProductModal({
 
           <div className="grid grid-cols-2 gap-4">
 
-   <input
-  type="number"
-  step="0.01"
-  min="0"
-  className="h-12 rounded-xl border px-4"
-  placeholder="Preço"
-  value={form.price || ""}
-  onChange={(e) =>
-    update("price", Number(e.target.value))
-  }
+            <input
+              type="number"
+              step="0.01"
+              min="0"
+              className="h-12 rounded-xl border px-4"
+              placeholder="Preço"
+              value={form.price || ""}
               onChange={(e) =>
                 update(
                   "price",
@@ -149,13 +172,14 @@ export default function ProductModal({
 
             <input
               type="number"
+              min="0"
               className="h-12 rounded-xl border px-4"
               placeholder="Estoque"
               value={form.stock}
               onChange={(e) =>
                 update(
                   "stock",
-                  Number(e.target.value)
+                  Number(e.target.value) || 0
                 )
               }
             />
@@ -187,8 +211,7 @@ export default function ProductModal({
             ))}
 
           </select>
-
-          <div className="space-y-3">
+                    <div className="space-y-3">
 
             <label className="text-sm font-medium">
               Imagens do produto
@@ -201,9 +224,7 @@ export default function ProductModal({
               onChange={(e) => {
                 if (!e.target.files) return;
 
-                setImages(
-                  Array.from(e.target.files)
-                );
+                setImages(Array.from(e.target.files));
               }}
             />
 
@@ -222,68 +243,72 @@ export default function ProductModal({
                     >
                       <img
                         src={URL.createObjectURL(image)}
-                        alt=""
+                        alt={`Imagem ${index + 1}`}
                         className="h-full w-full object-cover"
                       />
                     </div>
                   ))}
 
                 </div>
-
               </>
             )}
 
           </div>
 
-          <label className="flex items-center gap-3">
+          <div className="grid grid-cols-2 gap-6">
 
-            <input
-              type="checkbox"
-              checked={form.featured}
-              onChange={(e) =>
-                update(
-                  "featured",
-                  e.target.checked
-                )
-              }
-            />
+            <label className="flex items-center gap-3">
 
-            Produto em destaque
+              <input
+                type="checkbox"
+                checked={form.featured}
+                onChange={(e) =>
+                  update("featured", e.target.checked)
+                }
+              />
 
-          </label>
+              <span>Produto em destaque</span>
 
-          <label className="flex items-center gap-3">
+            </label>
 
-            <input
-              type="checkbox"
-              checked={form.active}
-              onChange={(e) =>
-                update(
-                  "active",
-                  e.target.checked
-                )
-              }
-            />
+            <label className="flex items-center gap-3">
 
-            Produto ativo
+              <input
+                type="checkbox"
+                checked={form.active}
+                onChange={(e) =>
+                  update("active", e.target.checked)
+                }
+              />
 
-          </label>
+              <span>Produto ativo</span>
 
-          <div className="flex justify-end gap-3 mt-8">
+            </label>
+
+          </div>
+
+          <div className="mt-8 flex justify-end gap-3">
 
             <button
+              type="button"
               onClick={onClose}
+              disabled={loading}
               className="rounded-xl border px-6 py-3"
             >
               Cancelar
             </button>
 
             <button
+              type="button"
               onClick={handleSave}
               disabled={loading}
-              className="rounded-xl bg-[#C8A96A] px-6 py-3 text-white"
+              className="rounded-xl bg-[#C8A96A] px-6 py-3 text-white transition hover:opacity-90 disabled:opacity-60"
             >
-              {loading ? "Salvando..." : "Salvar"}
+              {loading
+                ? "Salvando..."
+                : product
+                ? "Atualizar Produto"
+                : "Salvar Produto"}
             </button>
 
           </div>

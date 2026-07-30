@@ -52,6 +52,8 @@ export function AuthProvider({
         data: { session },
       } = await supabase.auth.getSession();
 
+      console.log("SESSION AO CARREGAR:", session);
+
       setUser(session?.user ?? null);
       setLoading(false);
     }
@@ -61,7 +63,10 @@ export function AuthProvider({
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
+      (event, session) => {
+        console.log("AUTH EVENT:", event);
+        console.log("AUTH SESSION:", session);
+
         setUser(session?.user ?? null);
       }
     );
@@ -75,11 +80,14 @@ export function AuthProvider({
     email: string,
     password: string
   ) {
-    const { error } =
+    const { data, error } =
       await supabase.auth.signInWithPassword({
         email,
         password,
       });
+
+    console.log("SIGNIN DATA:", data);
+    console.log("SIGNIN ERROR:", error);
 
     if (error) {
       return {
@@ -98,7 +106,11 @@ export function AuthProvider({
     email: string,
     password: string
   ) {
-    const { error } = await supabase.auth.signUp({
+    console.log("==================================");
+    console.log("INICIANDO CADASTRO");
+    console.log("==================================");
+
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
@@ -109,6 +121,11 @@ export function AuthProvider({
         },
       },
     });
+
+    console.log("SIGNUP DATA:", data);
+    console.log("SIGNUP USER:", data?.user);
+    console.log("SIGNUP SESSION:", data?.session);
+    console.log("SIGNUP ERROR:", error);
 
     if (error) {
       return {

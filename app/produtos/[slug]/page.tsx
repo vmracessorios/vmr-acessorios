@@ -1,9 +1,10 @@
-import Image from "next/image";
 import { notFound } from "next/navigation";
 
 import { getProductBySlug } from "@/services/products";
 import { getPublicUrl } from "@/services/storage";
-import AddToCartButton from "@/app/components/AddToCartButton";
+
+import ProductGallery from "./components/ProductGallery";
+import ProductInfo from "./components/ProductInfo";
 
 type Props = {
   params: Promise<{
@@ -14,65 +15,53 @@ type Props = {
 export default async function ProductPage({ params }: Props) {
   const { slug } = await params;
 
-  console.log("SLUG DA PÁGINA:", slug);
-
   const product = await getProductBySlug(slug);
 
   if (!product) {
     notFound();
   }
 
-  const image =
+  const images =
     product.product_images && product.product_images.length > 0
-      ? getPublicUrl(product.product_images[0].storage_path)
-      : "/placeholder.jpg";
+      ? product.product_images.map((img) =>
+          getPublicUrl(img.storage_path)
+        )
+      : ["/placeholder.jpg"];
 
   return (
-    <main className="max-w-7xl mx-auto px-6 py-20">
-      <div className="grid lg:grid-cols-2 gap-16">
-        <div className="relative aspect-square rounded-3xl overflow-hidden bg-[#FAF8F5]">
-          <Image
-            src={image}
-            alt={product.name}
-            fill
-            className="object-cover"
-            priority
-          />
-        </div>
+    <main className="mx-auto max-w-7xl px-6 py-16">
 
-        <div>
-          <p className="uppercase tracking-[4px] text-[#C8A96A] text-sm">
-            {product.categories?.name}
-          </p>
-
-          <h1 className="mt-4 text-5xl font-light">
-            {product.name}
-          </h1>
-
-          <p className="mt-6 text-4xl font-semibold text-[#C8A96A]">
-            {product.price.toLocaleString("pt-BR", {
-              style: "currency",
-              currency: "BRL",
-            })}
-          </p>
-
-          <div className="mt-10 leading-8 text-neutral-600">
-            {product.description}
-          </div>
-
-          <div className="mt-12">
-            <AddToCartButton
-              product={{
-                id: product.id,
-                slug: product.slug,
-                name: product.name,
-                price: product.price,
-                image,
-              }}
-            />
-          </div>
-        </div>
+      <div className="mb-8">
+        <a
+          href="/"
+          className="text-sm text-neutral-500 transition hover:text-[#C8A96A]"
+        >
+          ← Voltar para os produtos
+        </a>
       </div>
+
+      <div className="grid gap-16 lg:grid-cols-2">
+
+        <ProductGallery
+          images={images}
+          name={product.name}
+        />
+
+        <ProductInfo
+          product={{
+            id: product.id,
+            slug: product.slug,
+            name: product.name,
+            description: product.description,
+            price: product.price,
+            stock: product.stock,
+            image: images[0],
+            category: product.categories?.name,
+          }}
+        />
+
+      </div>
+
     </main>
   );
 }

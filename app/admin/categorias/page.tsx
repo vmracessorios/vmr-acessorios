@@ -3,9 +3,7 @@
 import { useEffect, useState } from "react";
 
 import CategoryModal from "@/app/components/admin/CategoryModal";
-
 import { Category } from "@/types/category";
-
 import {
   getCategories,
   createCategory,
@@ -14,7 +12,6 @@ import {
 export default function CategoriasPage() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
-
   const [openModal, setOpenModal] = useState(false);
 
   useEffect(() => {
@@ -36,7 +33,6 @@ export default function CategoriasPage() {
     description: string;
   }) {
     await createCategory(data);
-
     await loadCategories();
   }
 
@@ -49,11 +45,8 @@ export default function CategoriasPage() {
       />
 
       <div>
-
         <div className="flex items-center justify-between mb-8">
-
           <div>
-
             <h1 className="text-3xl font-semibold">
               Categorias
             </h1>
@@ -61,7 +54,6 @@ export default function CategoriasPage() {
             <p className="mt-2 text-neutral-500">
               Gerencie as categorias da VMR.
             </p>
-
           </div>
 
           <button
@@ -70,17 +62,12 @@ export default function CategoriasPage() {
           >
             Nova Categoria
           </button>
-
         </div>
 
         <div className="rounded-2xl bg-white border overflow-hidden">
-
           <table className="w-full">
-
             <thead className="bg-neutral-50">
-
               <tr>
-
                 <th className="text-left p-4">
                   Nome
                 </th>
@@ -92,13 +79,10 @@ export default function CategoriasPage() {
                 <th className="text-left p-4">
                   Status
                 </th>
-
               </tr>
-
             </thead>
 
             <tbody>
-
               {loading && (
                 <tr>
                   <td
@@ -124,12 +108,9 @@ export default function CategoriasPage() {
                       {category.slug}
                     </td>
 
-                    <td className="p-4">
-                      {category.active
-                        ? "Ativa"
-                        : "Inativa"}
+                    <td className="p-4 text-green-600 font-medium">
+                      Ativa
                     </td>
-
                   </tr>
                 ))}
 
@@ -144,13 +125,9 @@ export default function CategoriasPage() {
                     </td>
                   </tr>
                 )}
-
             </tbody>
-
           </table>
-
         </div>
-
       </div>
     </>
   );

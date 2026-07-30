@@ -1,91 +1,44 @@
-import Image from "next/image";
-import { notFound } from "next/navigation";
+"use client";
 
-import { getProductBySlug } from "@/services/products";
-import { getPublicUrl } from "@/services/storage";
-
-import AddToCartButton from "@/app/components/AddToCartButton";
+import { useState } from "react";
+import { useCart } from "@/context/CartContext";
 
 type Props = {
-  params: Promise<{
+  product: {
+    id: string;
     slug: string;
-  }>;
+    name: string;
+    price: number;
+    image: string;
+  };
 };
 
-export default async function ProductPage({ params }: Props) {
-  const { slug } = await params;
+export default function AddToCartButton({ product }: Props) {
+  const { addToCart } = useCart();
+  const [added, setAdded] = useState(false);
 
-  const product = await getProductBySlug(slug);
+  const handleAddToCart = () => {
+    addToCart(product);
 
-  if (!product) {
-    notFound();
-  }
+    setAdded(true);
 
-  const image =
-    product.product_images && product.product_images.length > 0
-      ? getPublicUrl(product.product_images[0].storage_path)
-      : "/placeholder.jpg";
+    setTimeout(() => {
+      setAdded(false);
+    }, 2000);
+  };
 
   return (
-    <main className="max-w-7xl mx-auto px-6 py-20">
-
-      <div className="grid lg:grid-cols-2 gap-16">
-
-        <div className="relative aspect-square rounded-3xl overflow-hidden bg-[#FAF8F5]">
-
-          <Image
-            src={image}
-            alt={product.name}
-            fill
-            className="object-cover"
-            priority
-          />
-
-        </div>
-
-        <div>
-
-          <p className="uppercase tracking-[4px] text-[#C8A96A] text-sm">
-            {product.categories?.name}
-          </p>
-
-          <h1 className="mt-4 text-5xl font-light">
-            {product.name}
-          </h1>
-
-          <p className="mt-6 text-4xl font-semibold text-[#C8A96A]">
-
-            {product.price.toLocaleString("pt-BR", {
-              style: "currency",
-              currency: "BRL",
-            })}
-
-          </p>
-
-          <div className="mt-10 leading-8 text-neutral-600">
-
-            {product.description}
-
-          </div>
-
-          <div className="mt-12">
-
-            <AddToCartButton
-              product={{
-                id: product.id,
-                slug: product.slug,
-                name: product.name,
-                price: product.price,
-                image,
-              }}
-            />
-
-          </div>
-
-        </div>
-
-      </div>
-
-    </main>
+    <button
+      type="button"
+      onClick={handleAddToCart}
+      disabled={added}
+      className={`w-full rounded-xl px-6 py-4 font-medium text-white transition-all duration-300 ${
+        added
+          ? "bg-green-600"
+          : "bg-[#C8A96A] hover:opacity-90"
+      }`}
+    >
+      {added ? "✓ Adicionado ao carrinho" : "Adicionar ao carrinho"}
+    </button>
   );
 }
