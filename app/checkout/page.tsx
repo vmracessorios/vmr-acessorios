@@ -26,8 +26,7 @@ export default function CheckoutPage() {
     observacoes: "",
   });
 
-  const frete = 0;
-  const total = cartTotal + frete;
+ 
 
   function handleChange(
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
