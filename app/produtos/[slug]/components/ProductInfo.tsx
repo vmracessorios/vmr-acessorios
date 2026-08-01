@@ -2,7 +2,7 @@ import ProductActions from "./ProductActions";
 
 type Props = {
   product: {
-    id: number;
+    id: number | string;
     slug: string;
     name: string;
     price: number;
@@ -16,20 +16,16 @@ type Props = {
 export default function ProductInfo({ product }: Props) {
   return (
     <div className="flex flex-col gap-6">
-
-      {/* Categoria */}
       {product.categories && (
         <span className="text-sm uppercase tracking-widest text-gray-500">
           {product.categories.name}
         </span>
       )}
 
-      {/* Nome */}
       <h1 className="text-4xl font-light text-[#2D2D2D]">
         {product.name}
       </h1>
 
-      {/* Preço */}
       <div>
         <p className="text-4xl font-semibold text-[#2D2D2D]">
           {product.price.toLocaleString("pt-BR", {
@@ -51,8 +47,12 @@ export default function ProductInfo({ product }: Props) {
         </p>
       </div>
 
-      <ProductActions product={product} />
-
+      <ProductActions
+        product={{
+          ...product,
+          id: String(product.id),
+        }}
+      />
     </div>
   );
 }
