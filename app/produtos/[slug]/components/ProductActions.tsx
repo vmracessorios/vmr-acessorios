@@ -5,7 +5,7 @@ import AddToCartButton from "@/app/components/AddToCartButton";
 
 type Props = {
   product: {
-    id: string;
+    id: number | string;
     slug: string;
     name: string;
     price: number;
@@ -28,19 +28,16 @@ export default function ProductActions({ product }: Props) {
     `Olá! Tenho interesse no produto:\n\n${product.name}\n\nQuantidade: ${quantity}`
   );
 
-  // Substitua pelo número da VMR quando formos publicar
   const whatsappLink = `https://wa.me/55SEUNUMEROAQUI?text=${whatsappMessage}`;
 
   return (
     <div className="space-y-6">
-
       <div>
         <p className="mb-2 text-sm font-medium text-gray-700">
           Quantidade
         </p>
 
         <div className="flex w-fit items-center overflow-hidden rounded-xl border border-gray-300">
-
           <button
             type="button"
             onClick={decrease}
@@ -60,11 +57,15 @@ export default function ProductActions({ product }: Props) {
           >
             +
           </button>
-
         </div>
       </div>
 
-      <AddToCartButton product={product} />
+      <AddToCartButton
+        product={{
+          ...product,
+          id: String(product.id),
+        }}
+      />
 
       <a
         href={whatsappLink}
@@ -74,7 +75,6 @@ export default function ProductActions({ product }: Props) {
       >
         Comprar pelo WhatsApp
       </a>
-
     </div>
   );
 }
