@@ -30,7 +30,6 @@ export default async function ProductPage({ params }: Props) {
 
   return (
     <main className="mx-auto max-w-7xl px-6 py-16">
-
       <div className="mb-8">
         <a
           href="/"
@@ -41,7 +40,6 @@ export default async function ProductPage({ params }: Props) {
       </div>
 
       <div className="grid gap-16 lg:grid-cols-2">
-
         <ProductGallery
           images={images}
           name={product.name}
@@ -52,16 +50,12 @@ export default async function ProductPage({ params }: Props) {
             id: product.id,
             slug: product.slug,
             name: product.name,
-            description: product.description,
             price: product.price,
-            stock: product.stock,
             image: images[0],
-            category: product.categories?.name,
+            categories: product.categories,
           }}
         />
-
       </div>
-
     </main>
   );
 }
