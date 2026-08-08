@@ -92,7 +92,7 @@ export default function Header() {
         <div className="max-w-7xl mx-auto h-24 px-6 lg:px-8 flex items-center justify-between">
 
           <Link
-            href="/"
+            href="/colares"
             className="flex items-center"
           >
             <Image
@@ -108,7 +108,7 @@ export default function Header() {
           <nav className="hidden lg:flex items-center gap-10 uppercase tracking-[2px] text-sm">
 
             <Link
-              href="/"
+              href="/pulseiras"
               className="hover:text-[#C8A96A] transition"
             >
               Início

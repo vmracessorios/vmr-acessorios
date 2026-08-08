@@ -5,6 +5,7 @@ import "./globals.css";
 
 import { CartProvider } from "@/context/CartContext";
 import { AuthProvider } from "@/context/AuthContext";
+import { FavoritesProvider } from "@/context/FavoritesContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -33,7 +34,9 @@ export default function RootLayout({
     >
       <body className="min-h-full bg-[#FAF8F5]">
         <AuthProvider>
+          <FavoritesProvider>
           <CartProvider>{children}</CartProvider>
+        </FavoritesProvider>
         </AuthProvider>
       </body>
     </html>

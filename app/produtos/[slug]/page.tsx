@@ -29,32 +29,34 @@ export default async function ProductPage({ params }: Props) {
       : ["/placeholder.jpg"];
 
   return (
-    <main className="mx-auto max-w-7xl px-6 py-16">
-      <div className="mb-8">
+    <main className="min-h-screen bg-[#FAF8F5]">
+      <div className="mx-auto max-w-7xl px-6 py-10">
+        {/* Voltar */}
         <a
-          href="/"
-          className="text-sm text-neutral-500 transition hover:text-[#C8A96A]"
+          href="/produtos"
+          className="mb-10 inline-flex items-center gap-2 text-sm text-[#1F1F1F] transition hover:text-[#C8A96A]"
         >
           ← Voltar para os produtos
         </a>
-      </div>
 
-      <div className="grid gap-16 lg:grid-cols-2">
-        <ProductGallery
-          images={images}
-          name={product.name}
-        />
+        {/* Produto */}
+        <div className="grid gap-16 lg:grid-cols-2">
+          <ProductGallery
+            images={images}
+            name={product.name}
+          />
 
-        <ProductInfo
-          product={{
-            id: product.id,
-            slug: product.slug,
-            name: product.name,
-            price: product.price,
-            image: images[0],
-            categories: product.categories,
-          }}
-        />
+          <ProductInfo
+            product={{
+              id: product.id,
+              slug: product.slug,
+              name: product.name,
+              price: product.price,
+              image: images[0],
+              categories: product.categories,
+            }}
+          />
+        </div>
       </div>
     </main>
   );
