@@ -23,6 +23,7 @@ export default function ProductGallery({
           src={selectedImage}
           alt={name}
           fill
+          sizes="(max-width: 768px) 100vw, 50vw"
           className="object-cover transition duration-300 hover:scale-110"
         />
 
@@ -45,6 +46,7 @@ export default function ProductGallery({
               src={image}
               alt={`${name} ${index + 1}`}
               fill
+              sizes="80px"
               className="object-cover"
             />
           </button>

@@ -26,7 +26,7 @@ export default async function ProductPage({ params }: Props) {
       ? product.product_images.map((img) =>
           getPublicUrl(img.storage_path)
         )
-      : ["/placeholder.jpg"];
+      : [];
 
   return (
     <main className="min-h-screen bg-[#FAF8F5]">

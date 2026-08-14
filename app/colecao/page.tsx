@@ -22,7 +22,7 @@ export default async function ColecaoPage() {
           {products.map((product) => {
             const image = product.product_images?.[0]
               ? getPublicUrl(product.product_images[0].storage_path)
-              : "/placeholder.jpg";
+              : "";
 
             return (
               <Link
@@ -35,6 +35,7 @@ export default async function ColecaoPage() {
                     src={image}
                     alt={product.name}
                     fill
+                    sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
                     className="object-cover transition duration-500 group-hover:scale-105"
                   />
                 </div>

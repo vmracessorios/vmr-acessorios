@@ -117,7 +117,7 @@ export default function FavoritosPage() {
                 product.product_images &&
                 product.product_images.length > 0
                   ? getPublicUrl(product.product_images[0].storage_path)
-                  : "/placeholder.jpg";
+                  : "";
 
               return (
                 <div
@@ -125,7 +125,7 @@ export default function FavoritosPage() {
                   className="group overflow-hidden rounded-2xl bg-white"
                 >
                   <div className="relative aspect-square overflow-hidden">
-                    <Link href={`/produtos/${product.slug}`}>
+                    <Link href={`/produtos/${product.slug}`} className="absolute inset-0">
                       <Image
                         src={image}
                         alt={

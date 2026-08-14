@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import { useCart } from "@/context/CartContext";
 import { useAuth } from "@/context/AuthContext";
 import { createOrder } from "@/lib/orderService";
+import { getProfileById, updateProfile } from "@/services/profiles";
 export default function CheckoutPage() {
   const { cart, cartTotal, clearCart } = useCart();
   const { user } = useAuth();
@@ -26,21 +27,107 @@ export default function CheckoutPage() {
     observacoes: "",
   });
 
+  useEffect(() => {
+    if (!user?.id) return;
+
+    async function loadProfile() {
+      try {
+        if (!user) return;
+
+        const profile = await getProfileById(user.id);
+
+        setForm((current) => ({
+          ...current,
+          nome: profile.full_name ?? "",
+          email: profile.email ?? user.email ?? "",
+          telefone: profile.phone ?? "",
+          cpf: profile.cpf ?? "",
+          cep: profile.cep ?? "",
+          rua: profile.street ?? "",
+          numero: profile.number ?? "",
+          complemento: profile.complement ?? "",
+          bairro: profile.neighborhood ?? "",
+          cidade: profile.city ?? "",
+          estado: profile.state ?? "",
+        }));
+      } catch (error) {
+        console.error("Erro ao carregar perfil do cliente:", error);
+      }
+    }
+
+    loadProfile();
+  }, [user?.id, user?.email]);
+
  const frete: number = 0;
 const total: number = cartTotal + frete;
 
-  function handleChange(
+  async function handleChange(
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) {
-    setForm({
-      ...form,
-      [e.target.name]: e.target.value,
-    });
+    const { name, value } = e.target;
+
+    setForm((current) => ({
+      ...current,
+      [name]: value,
+    }));
+
+    if (name !== "cep") return;
+
+    const cep = value.replace(/\D/g, "");
+
+    if (cep.length !== 8) return;
+
+    try {
+      const response = await fetch(
+        `https://viacep.com.br/ws/${cep}/json/`
+      );
+
+      if (!response.ok) {
+        throw new Error("Não foi possível consultar o CEP.");
+      }
+
+      const data = await response.json();
+
+      if (data.erro) {
+        alert("CEP não encontrado.");
+        return;
+      }
+
+      setForm((current) => ({
+        ...current,
+        cep,
+        rua: data.logradouro ?? "",
+        bairro: data.bairro ?? "",
+        cidade: data.localidade ?? "",
+        estado: data.uf ?? "",
+      }));
+    } catch (error) {
+      console.error("Erro ao consultar CEP:", error);
+      alert("Não foi possível consultar o CEP. Tente novamente.");
+    }
   }
 
   async function handleCheckout() {
   try {
     setLoading(true);
+
+    if (!user?.id) {
+      throw new Error("Você precisa estar logado para finalizar o pedido.");
+    }
+
+    await updateProfile(user.id, {
+      full_name: form.nome,
+      email: form.email,
+      phone: form.telefone || null,
+      cpf: form.cpf || null,
+      cep: form.cep || null,
+      street: form.rua || null,
+      number: form.numero || null,
+      complement: form.complemento || null,
+      neighborhood: form.bairro || null,
+      city: form.cidade || null,
+      state: form.estado || null,
+    });
 
     const order = await createOrder({
       profileId: user?.id ?? null,
@@ -124,6 +211,41 @@ const total: number = cartTotal + frete;
   setLoading(false);
 }
 }
+
+  if (!user) {
+    return (
+      <main className="min-h-screen bg-[#FAF8F5] pt-36 pb-20">
+        <div className="max-w-xl mx-auto px-6">
+          <section className="bg-white rounded-3xl shadow-sm p-10 text-center">
+            <h1 className="text-3xl font-light text-[#2F2F2F]">
+              Entre para continuar
+            </h1>
+
+            <p className="mt-4 text-gray-600">
+              Para finalizar sua compra, você precisa estar
+              cadastrado ou entrar na sua conta.
+            </p>
+
+            <div className="mt-8 flex flex-col gap-3">
+              <a
+                href="/login"
+                className="rounded-full bg-[#C8A96A] px-6 py-3 text-white transition hover:opacity-90"
+              >
+                Entrar na minha conta
+              </a>
+
+              <a
+                href="/cadastro"
+                className="rounded-full border border-[#C8A96A] px-6 py-3 text-[#C8A96A] transition hover:bg-[#C8A96A] hover:text-white"
+              >
+                Criar minha conta
+              </a>
+            </div>
+          </section>
+        </div>
+      </main>
+    );
+  }
 
   return (
         <main className="min-h-screen bg-[#FAF8F5] pt-36 pb-20">

@@ -65,10 +65,9 @@ export default function FeaturedProducts() {
 
         <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
           {products.map((product) => {
-            const image =
-              product.product_images?.length
-                ? getPublicUrl(product.product_images[0].storage_path)
-                : "/placeholder.jpg";
+            const image = product.product_images?.length
+              ? getPublicUrl(product.product_images[0].storage_path)
+              : "";
 
             const pixPrice = product.price * 0.95;
             const favorite = isFavorite(String(product.id));
@@ -105,15 +104,22 @@ export default function FeaturedProducts() {
                     />
                   </button>
 
-                  <Link href={`/produtos/${product.slug}`}>
-                    <Image
-                      src={image}
-                      alt={product.name}
-                      fill
-                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-                      className="object-cover transition duration-700 group-hover:scale-105"
-                    />
-                  </Link>
+                  <Link
+                href={`/produtos/${product.slug}`}
+                className="absolute inset-0"
+              >
+                {image ? (
+                  <Image
+                    src={image}
+                    alt={product.name}
+                    fill
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                    className="object-cover transition duration-700 group-hover:scale-105"
+                  />
+                ) : (
+                  <div className="h-full w-full bg-[#FAF8F5]" />
+                )}
+              </Link>
                 </div>
 
                 <div className="p-6">

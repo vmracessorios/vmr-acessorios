@@ -38,6 +38,7 @@ export default function HeroSlider() {
               width={1920}
               height={900}
               priority={index === 0}
+              loading={index === 0 ? "eager" : "lazy"}
               className="w-full h-auto"
             />
           </div>
@@ -49,6 +50,7 @@ export default function HeroSlider() {
           alt=""
           width={1920}
           height={900}
+          loading="lazy"
           className="w-full h-auto invisible"
         />
       </div>
