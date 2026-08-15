@@ -17,14 +17,26 @@ export default function FeaturedProducts() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const { isFavorite, toggleFavorite, loading: favoritesLoading } =
-    useFavorites();
+  const {
+    isFavorite,
+    toggleFavorite,
+    loading: favoritesLoading,
+  } = useFavorites();
 
   useEffect(() => {
     async function loadProducts() {
       try {
-        const data = await getProducts();
-        setProducts(data);
+        const data = await getProducts(false);
+
+        const featuredProducts = data
+          .filter(
+            (product) =>
+              product.active === true &&
+              product.featured === true
+          )
+          .slice(0, 5);
+
+        setProducts(featuredProducts);
       } catch (error) {
         console.error(error);
       } finally {
@@ -38,8 +50,8 @@ export default function FeaturedProducts() {
   if (loading) {
     return (
       <section className="bg-white py-24">
-        <div className="mx-auto max-w-7xl px-6 text-center">
-          Carregando produtos...
+        <div className="mx-auto max-w-7xl px-6 text-center text-neutral-500">
+          Carregando destaques...
         </div>
       </section>
     );
@@ -48,139 +60,178 @@ export default function FeaturedProducts() {
   return (
     <section className="bg-white py-24">
       <div className="mx-auto max-w-7xl px-6">
+
+        {/* CABEÇALHO */}
         <div className="mb-16 text-center">
+
           <span className="text-sm uppercase tracking-[5px] text-[#C8A96A]">
-            MAIS VENDIDOS
+            DESTAQUES VMR
           </span>
 
           <h2 className="mt-4 text-5xl font-light text-[#2F2F2F]">
-            Escolha seu favorito
+            Uma seleção especial
           </h2>
 
           <p className="mx-auto mt-5 max-w-2xl leading-7 text-neutral-500">
-            Cada colar foi escolhido para valorizar sua beleza com elegância,
-            sofisticação e exclusividade.
+            Peças escolhidas especialmente para representar a essência da
+            VMR Acessórios.
           </p>
+
         </div>
 
-        <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
-          {products.map((product) => {
-            const image = product.product_images?.length
-              ? getPublicUrl(product.product_images[0].storage_path)
-              : "";
+        {products.length === 0 ? (
+          <div className="py-20 text-center text-neutral-500">
+            Em breve, novos destaques estarão disponíveis.
+          </div>
+        ) : (
+          <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-5">
 
-            const pixPrice = product.price * 0.95;
-            const favorite = isFavorite(String(product.id));
+            {products.map((product) => {
 
-            return (
-              <div
-                key={product.id}
-                className="group overflow-hidden rounded-3xl border border-[#EFE9DF] bg-white shadow-sm transition-all duration-300 hover:-translate-y-2 hover:shadow-xl"
-              >
-                <div className="relative aspect-[4/5] overflow-hidden bg-[#FAF8F5]">
-                  <button
-                    type="button"
-                    onClick={(event) => {
-                      event.preventDefault();
-                      event.stopPropagation();
-                      toggleFavorite(String(product.id));
-                    }}
-                    disabled={favoritesLoading}
-                    aria-label={
-                      favorite
-                        ? `Remover ${product.name} dos favoritos`
-                        : `Adicionar ${product.name} aos favoritos`
-                    }
-                    className="absolute right-4 top-4 z-20 flex h-11 w-11 items-center justify-center rounded-full bg-white shadow-md transition hover:scale-110 disabled:cursor-wait disabled:opacity-70"
-                  >
-                    <Heart
-                      size={18}
-                      strokeWidth={1.8}
-                      className={
-                        favorite
-                          ? "fill-[#C8A96A] text-[#C8A96A]"
-                          : "text-[#C8A96A]"
-                      }
-                    />
-                  </button>
+              const image = product.product_images?.length
+                ? getPublicUrl(
+                    product.product_images[0].storage_path
+                  )
+                : "";
 
-                  <Link
-                href={`/produtos/${product.slug}`}
-                className="absolute inset-0"
-              >
-                {image ? (
-                  <Image
-                    src={image}
-                    alt={product.name}
-                    fill
-                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-                    className="object-cover transition duration-700 group-hover:scale-105"
-                  />
-                ) : (
-                  <div className="h-full w-full bg-[#FAF8F5]" />
-                )}
-              </Link>
-                </div>
+              const pixPrice = product.price * 0.95;
 
-                <div className="p-6">
-                  <h3 className="text-lg font-medium text-[#2F2F2F]">
-                    {product.name}
-                  </h3>
+              const favorite = isFavorite(
+                String(product.id)
+              );
 
-                  <div className="mt-2 flex text-yellow-400">
-                    ★★★★★
-                  </div>
+              return (
+                <div
+                  key={product.id}
+                  className="group overflow-hidden rounded-3xl border border-[#EFE9DF] bg-white shadow-sm transition-all duration-300 hover:-translate-y-2 hover:shadow-xl"
+                >
 
-                  <p className="mt-4 text-2xl font-semibold text-[#C8A96A]">
-                    {product.price.toLocaleString("pt-BR", {
-                      style: "currency",
-                      currency: "BRL",
-                    })}
-                  </p>
+                  {/* IMAGEM */}
+                  <div className="relative aspect-[4/5] overflow-hidden bg-[#FAF8F5]">
 
-                  <p className="mt-1 text-sm font-medium text-green-600">
-                    💚 PIX:{" "}
-                    {pixPrice.toLocaleString("pt-BR", {
-                      style: "currency",
-                      currency: "BRL",
-                    })}
-                  </p>
+                    {/* FAVORITO */}
+                    <button
+                      type="button"
+                      onClick={(event) => {
+                        event.preventDefault();
+                        event.stopPropagation();
 
-                  <div className="mt-3">
-                    {product.stock > 0 ? (
-                      <span className="rounded-full bg-green-100 px-3 py-1 text-xs font-medium text-green-700">
-                        Em estoque
-                      </span>
-                    ) : (
-                      <span className="rounded-full bg-red-100 px-3 py-1 text-xs font-medium text-red-700">
-                        Indisponível
-                      </span>
-                    )}
-                  </div>
-
-                  <div className="mt-6">
-                    <AddToCartButton
-                      product={{
-                        id: product.id,
-                        slug: product.slug,
-                        name: product.name,
-                        price: product.price,
-                        image,
+                        toggleFavorite(
+                          String(product.id)
+                        );
                       }}
-                    />
+                      disabled={favoritesLoading}
+                      aria-label={
+                        favorite
+                          ? `Remover ${product.name} dos favoritos`
+                          : `Adicionar ${product.name} aos favoritos`
+                      }
+                      className="absolute right-4 top-4 z-20 flex h-11 w-11 items-center justify-center rounded-full bg-white shadow-md transition hover:scale-110 disabled:cursor-wait disabled:opacity-70"
+                    >
+                      <Heart
+                        size={18}
+                        strokeWidth={1.8}
+                        className={
+                          favorite
+                            ? "fill-[#C8A96A] text-[#C8A96A]"
+                            : "text-[#C8A96A]"
+                        }
+                      />
+                    </button>
+
+                    {/* PRODUTO */}
+                    <Link
+                      href={`/produtos/${product.slug}`}
+                      className="absolute inset-0"
+                    >
+                      {image ? (
+                        <Image
+                          src={image}
+                          alt={product.name}
+                          fill
+                          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 20vw"
+                          className="object-cover transition duration-700 group-hover:scale-105"
+                        />
+                      ) : (
+                        <div className="h-full w-full bg-[#FAF8F5]" />
+                      )}
+                    </Link>
+
                   </div>
 
-                  <Link
-                    href={`/produtos/${product.slug}`}
-                    className="mt-4 block text-center text-sm font-medium text-[#C8A96A] transition hover:underline"
-                  >
-                    Ver detalhes →
-                  </Link>
+                  {/* INFORMAÇÕES */}
+                  <div className="p-6">
+
+                    <h3 className="text-lg font-medium text-[#2F2F2F]">
+                      {product.name}
+                    </h3>
+
+                    <div className="mt-2 flex text-yellow-400">
+                      ★★★★★
+                    </div>
+
+                    <p className="mt-4 text-2xl font-semibold text-[#C8A96A]">
+                      {product.price.toLocaleString("pt-BR", {
+                        style: "currency",
+                        currency: "BRL",
+                      })}
+                    </p>
+
+                    <p className="mt-1 text-sm font-medium text-green-600">
+                      💚 PIX:{" "}
+                      {pixPrice.toLocaleString("pt-BR", {
+                        style: "currency",
+                        currency: "BRL",
+                      })}
+                    </p>
+
+                    {/* ESTOQUE */}
+                    <div className="mt-3">
+
+                      {product.stock > 0 ? (
+                        <span className="rounded-full bg-green-100 px-3 py-1 text-xs font-medium text-green-700">
+                          Em estoque
+                        </span>
+                      ) : (
+                        <span className="rounded-full bg-red-100 px-3 py-1 text-xs font-medium text-red-700">
+                          Indisponível
+                        </span>
+                      )}
+
+                    </div>
+
+                    {/* CARRINHO */}
+                    <div className="mt-6">
+
+                      <AddToCartButton
+                        product={{
+                          id: product.id,
+                          slug: product.slug,
+                          name: product.name,
+                          price: product.price,
+                          image,
+                        }}
+                      />
+
+                    </div>
+
+                    {/* DETALHES */}
+                    <Link
+                      href={`/produtos/${product.slug}`}
+                      className="mt-4 block text-center text-sm font-medium text-[#C8A96A] transition hover:underline"
+                    >
+                      Ver detalhes →
+                    </Link>
+
+                  </div>
+
                 </div>
-              </div>
-            );
-          })}
-        </div>
+              );
+            })}
+
+          </div>
+        )}
+
       </div>
     </section>
   );
