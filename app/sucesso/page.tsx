@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect } from "react";
-import Link from "next/link";
 import { useCart } from "@/context/CartContext";
 
 export default function SucessoPage() {
@@ -11,11 +10,17 @@ export default function SucessoPage() {
     clearCart();
   }, [clearCart]);
 
+  function voltarParaLoja() {
+    window.location.href = "https://www.vmracessorios.com.br/";
+  }
+
   return (
     <main className="min-h-screen flex items-center justify-center bg-[#FAF8F5] px-6">
-      <div className="max-w-xl rounded-3xl bg-white p-10 shadow-lg text-center">
+      <div className="max-w-xl w-full rounded-3xl bg-white p-10 shadow-lg text-center">
 
-        <div className="text-6xl mb-6">🎉</div>
+        <div className="text-6xl mb-6">
+          🎉
+        </div>
 
         <h1 className="text-4xl font-light text-[#2F2F2F]">
           Pagamento aprovado!
@@ -23,15 +28,17 @@ export default function SucessoPage() {
 
         <p className="mt-6 text-neutral-600 leading-7">
           Recebemos seu pagamento com sucesso.
+          <br />
           Em breve enviaremos todas as informações do pedido para o seu e-mail.
         </p>
 
-        <Link
-          href="/"
-          className="mt-10 inline-block rounded-full bg-[#C8A96A] px-8 py-4 text-white transition hover:opacity-90"
+        <button
+          type="button"
+          onClick={voltarParaLoja}
+          className="mt-10 inline-block rounded-full bg-[#C8A96A] px-8 py-4 text-white transition hover:opacity-90 cursor-pointer"
         >
           Voltar para a loja
-        </Link>
+        </button>
 
       </div>
     </main>
