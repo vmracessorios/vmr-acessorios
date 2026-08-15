@@ -4,10 +4,12 @@ const categories = [
   {
     title: "Colares",
     description: "Conheça nossa coleção exclusiva.",
+    href: "/colares",
   },
   {
     title: "Pulseiras",
-    description: "Lançamento em breve.",
+    description: "Descubra nossas pulseiras.",
+    href: "/pulseiras",
   },
 ];
 
@@ -34,7 +36,7 @@ export default function Categories() {
 
             <Link
               key={category.title}
-              href="/"
+              href={category.href}
               className="group rounded-3xl border border-neutral-200 bg-white p-10 transition duration-300 hover:-translate-y-2 hover:shadow-xl"
             >
 

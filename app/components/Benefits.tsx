@@ -3,6 +3,7 @@ import {
   Truck,
   Gem,
   BadgePercent,
+  ShoppingBag,
 } from "lucide-react";
 
 const benefits = [
@@ -26,6 +27,11 @@ const benefits = [
     title: "5% OFF no PIX",
     description: "Economize pagando via PIX.",
   },
+  {
+    icon: ShoppingBag,
+    title: "Frete Grátis",
+    description: "Para pedidos acima de R$ 300,00.",
+  },
 ];
 
 export default function Benefits() {
@@ -33,7 +39,7 @@ export default function Benefits() {
     <section className="bg-white border-y border-[#EFE9DF]">
       <div className="max-w-7xl mx-auto px-6 py-14">
 
-        <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-5">
 
           {benefits.map((item) => {
             const Icon = item.icon;

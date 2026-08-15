@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 
 const banners = [
   "/banner/banner-1.PNG",
@@ -82,9 +83,13 @@ export default function HeroSlider() {
               que valorizam elegância, autenticidade e sofisticação.
             </p>
 
-            <button className="mt-10 px-10 py-4 rounded-full bg-[#C8A96A] text-white uppercase tracking-[2px] font-medium transition duration-300 hover:scale-105 hover:shadow-xl">
+            {/* COMPRAR AGORA */}
+            <Link
+              href="/colares"
+              className="mt-10 inline-flex items-center justify-center px-10 py-4 rounded-full bg-[#C8A96A] text-white uppercase tracking-[2px] font-medium transition duration-300 hover:scale-105 hover:shadow-xl"
+            >
               Comprar Agora
-            </button>
+            </Link>
 
           </div>
 
@@ -97,6 +102,8 @@ export default function HeroSlider() {
         {banners.map((_, index) => (
           <button
             key={index}
+            type="button"
+            aria-label={`Ir para o banner ${index + 1}`}
             onClick={() => setCurrent(index)}
             className={`transition-all duration-300 rounded-full ${
               current === index
