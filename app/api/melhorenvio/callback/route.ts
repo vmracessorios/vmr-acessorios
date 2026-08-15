@@ -1,63 +1,43 @@
 import { NextResponse } from "next/server";
 
-const ORIGIN_CEP = "28015220";
-
-export async function POST(request: Request) {
+export async function GET(request: Request) {
   try {
-    const body = await request.json();
+    const { searchParams } = new URL(request.url);
+    const code = searchParams.get("code");
 
-    const destinationCep = String(body.cep || "").replace(/\D/g, "");
-
-    if (destinationCep.length !== 8) {
+    if (!code) {
       return NextResponse.json(
-        { error: "CEP de destino inválido." },
+        { error: "Código de autorização não recebido." },
         { status: 400 }
       );
     }
 
-    const accessToken = process.env.MELHOR_ENVIO_ACCESS_TOKEN;
+    const clientId = process.env.MELHOR_ENVIO_CLIENT_ID;
+    const clientSecret = process.env.MELHOR_ENVIO_CLIENT_SECRET;
+    const redirectUri = process.env.MELHOR_ENVIO_REDIRECT_URI;
 
-    if (!accessToken) {
+    if (!clientId || !clientSecret || !redirectUri) {
       return NextResponse.json(
-        {
-          error:
-            "MELHOR_ENVIO_ACCESS_TOKEN não configurado na Vercel.",
-        },
+        { error: "Credenciais do Melhor Envio não configuradas." },
         { status: 500 }
       );
     }
 
     const response = await fetch(
-      "https://sandbox.melhorenvio.com.br/api/v2/me/shipment/calculate",
+      "https://sandbox.melhorenvio.com.br/oauth/token",
       {
         method: "POST",
         headers: {
           Accept: "application/json",
           "Content-Type": "application/json",
-          Authorization: `Bearer ${accessToken}`,
-          "User-Agent":
-            "VMR Acessórios (contato@vmracessorios.com.br)",
+          "User-Agent": "VMR Acessórios",
         },
         body: JSON.stringify({
-          from: {
-            postal_code: ORIGIN_CEP,
-          },
-
-          to: {
-            postal_code: destinationCep,
-          },
-
-          products: [
-            {
-              id: "vmr-acessorios",
-              width: 15,
-              height: 5,
-              length: 20,
-              weight: 0.3,
-              insurance_value: 0,
-              quantity: 1,
-            },
-          ],
+          grant_type: "authorization_code",
+          client_id: clientId,
+          client_secret: clientSecret,
+          redirect_uri: redirectUri,
+          code,
         }),
       }
     );
@@ -65,41 +45,29 @@ export async function POST(request: Request) {
     const data = await response.json();
 
     if (!response.ok) {
-      console.error("Erro Melhor Envio:", data);
+      console.error("Erro ao obter token do Melhor Envio:", data);
 
       return NextResponse.json(
         {
-          error: "Erro ao calcular o frete.",
+          error: "Erro ao obter token do Melhor Envio.",
           details: data,
         },
         { status: response.status }
       );
     }
 
-    const options = Array.isArray(data)
-      ? data
-          .filter((item) => !item.error && item.price)
-          .map((item) => ({
-            id: item.id,
-            name: item.name,
-            company: item.company?.name ?? "",
-            price: Number(item.price),
-            deliveryTime: item.delivery_time,
-            deliveryRange: item.delivery_range,
-          }))
-      : [];
-
     return NextResponse.json({
       success: true,
-      options,
+      message: "Melhor Envio autorizado com sucesso.",
+      access_token: data.access_token,
+      refresh_token: data.refresh_token,
+      expires_in: data.expires_in,
     });
   } catch (error) {
-    console.error("Erro interno ao calcular frete:", error);
+    console.error("Erro no callback Melhor Envio:", error);
 
     return NextResponse.json(
-      {
-        error: "Não foi possível calcular o frete.",
-      },
+      { error: "Erro interno no callback." },
       { status: 500 }
     );
   }
