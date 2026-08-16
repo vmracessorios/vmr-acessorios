@@ -33,10 +33,10 @@ export default async function ProductPage({ params }: Props) {
       <div className="mx-auto max-w-7xl px-6 py-10">
         {/* Voltar */}
         <a
-          href="/produtos"
+          href="/colecao"
           className="mb-10 inline-flex items-center gap-2 text-sm text-[#1F1F1F] transition hover:text-[#C8A96A]"
         >
-          ← Voltar para os produtos
+          ← Voltar para coleção
         </a>
 
         {/* Produto */}
