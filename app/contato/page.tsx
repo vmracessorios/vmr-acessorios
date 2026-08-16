@@ -166,9 +166,10 @@ export default function ContatoPage() {
 
               {/* WHATSAPP */}
               <a
-                href="https://wa.me/SEUNUMERO"
+                href="https://wa.me/5522999330802"
                 target="_blank"
                 rel="noopener noreferrer"
+                aria-label="Falar com a VMR Acessórios pelo WhatsApp"
                 className="flex items-center gap-4 rounded-2xl border border-[#E7C7C8] bg-white p-5 transition hover:border-[#C8A96A]"
               >
                 <div className="flex h-11 w-11 items-center justify-center rounded-full bg-[#F3E9E5] text-[#C8A96A]">
@@ -208,9 +209,10 @@ export default function ContatoPage() {
 
               {/* INSTAGRAM */}
               <a
-                href="https://www.instagram.com/"
+                href="https://www.instagram.com/vmracessorios/"
                 target="_blank"
                 rel="noopener noreferrer"
+                aria-label="Instagram da VMR Acessórios"
                 className="flex items-center gap-4 rounded-2xl border border-[#E7C7C8] bg-white p-5 transition hover:border-[#C8A96A]"
               >
                 <div className="flex h-11 w-11 items-center justify-center rounded-full bg-[#F3E9E5] text-[#C8A96A]">

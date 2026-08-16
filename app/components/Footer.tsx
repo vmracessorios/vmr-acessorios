@@ -33,7 +33,7 @@ export default function Footer() {
             {/* INSTAGRAM */}
             <div className="mt-8">
               <Link
-                href="https://instagram.com/vmracessorios"
+                href="https://www.instagram.com/vmracessorios/"
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Instagram da VMR Acessórios"
@@ -131,7 +131,14 @@ export default function Footer() {
 
             <div className="space-y-4 text-neutral-400">
 
-              <div className="flex items-start gap-3">
+              {/* WHATSAPP */}
+              <a
+                href="https://wa.me/5522999330802"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Falar com a VMR Acessórios pelo WhatsApp"
+                className="flex items-start gap-3 transition hover:text-white"
+              >
                 <Phone
                   size={18}
                   className="mt-1 shrink-0 text-[#C8A96A]"
@@ -141,11 +148,12 @@ export default function Footer() {
                   WhatsApp
                   <br />
                   <span className="text-neutral-500">
-                    Número em atualização
+                    (22) 99933-0802
                   </span>
                 </span>
-              </div>
+              </a>
 
+              {/* E-MAIL */}
               <div className="flex items-start gap-3">
                 <Mail
                   size={18}
@@ -157,6 +165,7 @@ export default function Footer() {
                 </span>
               </div>
 
+              {/* LOCALIZAÇÃO */}
               <div className="flex items-start gap-3">
                 <MapPin
                   size={18}
